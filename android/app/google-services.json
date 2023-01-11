@@ -1,0 +1,39 @@
+{
+    "project_info": {
+      "project_number": "299438577483",
+      "project_id": "language-recognize",
+      "storage_bucket": "language-recognize.appspot.com"
+    },
+    "client": [
+      {
+        "client_info": {
+          "mobilesdk_app_id": "1:299438577483:android:580d5ef3809a131365bace",
+          "android_client_info": {
+            "package_name": "com.oss.text_recognition"
+          }
+        },
+        "oauth_client": [
+          {
+            "client_id": "299438577483-g3qcclgi7l9bc8p18qfcd1csdhm2te5r.apps.googleusercontent.com",
+            "client_type": 3
+          }
+        ],
+        "api_key": [
+          {
+            "current_key": "AIzaSyAM6nK72JyMG4VPfDFXW2kmaQ3PquvfPDM"
+          }
+        ],
+        "services": {
+          "appinvite_service": {
+            "other_platform_oauth_client": [
+              {
+                "client_id": "299438577483-g3qcclgi7l9bc8p18qfcd1csdhm2te5r.apps.googleusercontent.com",
+                "client_type": 3
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "configuration_version": "1"
+  }
