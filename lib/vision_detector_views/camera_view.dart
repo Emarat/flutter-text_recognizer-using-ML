@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'dart:io';
 
 import 'package:camera/camera.dart';
@@ -6,7 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../main.dart';
+List<CameraDescription> cameras = [];
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  cameras = await availableCameras();
+}
 
 enum ScreenMode { liveFeed, gallery }
 
@@ -86,22 +93,23 @@ class _CameraViewState extends State<CameraView> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        actions: [
-          if (_allowPicker)
-            Padding(
-              padding: EdgeInsets.only(right: 20.0),
-              child: GestureDetector(
-                onTap: _switchScreenMode,
-                child: Icon(
-                  _mode == ScreenMode.liveFeed
-                      ? Icons.photo_library_outlined
-                      : (Platform.isIOS
-                          ? Icons.camera_alt_outlined
-                          : Icons.camera),
-                ),
-              ),
-            ),
-        ],
+        backgroundColor: const Color(0xFF6478D3),
+        // actions: [
+        // if (_allowPicker)
+        // Padding(
+        //   padding: EdgeInsets.only(right: 20.0),
+        //   child: GestureDetector(
+        //     onTap: _switchScreenMode,
+        //     child: Icon(
+        //       _mode == ScreenMode.liveFeed
+        //           ? Icons.photo_library_outlined
+        //           : (Platform.isIOS
+        //               ? Icons.camera_alt_outlined
+        //               : Icons.camera),
+        //     ),
+        //   ),
+        // ),
+        // ],
       ),
       body: _body(),
       floatingActionButton: _floatingActionButton(),
@@ -160,8 +168,8 @@ class _CameraViewState extends State<CameraView> {
             scale: scale,
             child: Center(
               child: _changingCameraLens
-                  ? Center(
-                      child: const Text('Changing camera lens'),
+                  ? const Center(
+                      child: Text('Changing camera lens'),
                     )
                   : CameraPreview(_controller!),
             ),
@@ -192,44 +200,140 @@ class _CameraViewState extends State<CameraView> {
   }
 
   Widget _galleryBody() {
-    return ListView(shrinkWrap: true, children: [
-      _image != null
-          ? SizedBox(
-              height: 400,
-              width: 400,
-              child: Stack(
-                fit: StackFit.expand,
-                children: <Widget>[
-                  Image.file(_image!),
-                  if (widget.customPaint != null) widget.customPaint!,
+    return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
+      child: Center(
+        child: Container(
+          child: Column(children: [
+            const SizedBox(
+              height: 20,
+            ),
+            _image != null
+                ? SizedBox(
+                    height: 250,
+                    width: 400,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: <Widget>[
+                        Image.file(_image!),
+                        if (widget.customPaint != null) widget.customPaint!,
+                      ],
+                    ),
+                  )
+                : const Image(
+                    image: AssetImage(
+                      'assets/icons/tscan-logo.png',
+                    ),
+                    height: 100,
+                  ),
+            // const Icon(
+            //     Icons.image,
+            //     size: 200,
+            //   ),
+            const SizedBox(
+              height: 30,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: SizedBox(
+                width: 170,
+                child: ElevatedButton(
+                  onPressed: () {
+                    _getImage(ImageSource.gallery);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        const Color(0xFF6478D3), // Background color
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('From Gallery'),
+                      IconButton(
+                          onPressed: () {
+                            _getImage(ImageSource.gallery);
+                          },
+                          icon: Image.asset('assets/icons/gallery-icon.png')),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: SizedBox(
+                width: 170,
+                child: ElevatedButton(
+                  onPressed: () {
+                    _getImage(ImageSource.camera);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        const Color(0xFF6478D3), // Background color
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Take a picture'),
+                      IconButton(
+                          onPressed: () => _getImage(ImageSource.camera),
+                          icon: Image.asset('assets/icons/camera-icon.png'))
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text('Extracted Text:'),
+            ),
+            if (_image != null)
+              Column(
+                children: [
+                  SizedBox(
+                    height: 180,
+                    width: 300,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.white),
+                        color: const Color.fromRGBO(0, 0, 0, 0.04),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(5),
+                        child: SingleChildScrollView(
+                          child: Text(
+                              // '${_path == null ? '' : 'Image path: $_path'}\n\n${widget.text ?? ''}'),
+                              _path == null ? '' : widget.text ?? ''),
+                        ),
+                      ),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      // saveTextToServer(widget.text);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF6478D3),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                    ),
+                    child: const Text('Save'),
+                  ),
                 ],
               ),
-            )
-          : Icon(
-              Icons.image,
-              size: 200,
-            ),
-      Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        child: ElevatedButton(
-          child: Text('From Gallery'),
-          onPressed: () => _getImage(ImageSource.gallery),
+          ]),
         ),
       ),
-      Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        child: ElevatedButton(
-          child: Text('Take a picture'),
-          onPressed: () => _getImage(ImageSource.camera),
-        ),
-      ),
-      if (_image != null)
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-              '${_path == null ? '' : 'Image path: $_path'}\n\n${widget.text ?? ''}'),
-        ),
-    ]);
+    );
   }
 
   Future _getImage(ImageSource source) async {

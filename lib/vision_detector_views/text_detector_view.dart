@@ -27,7 +27,7 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
   @override
   Widget build(BuildContext context) {
     return CameraView(
-      title: 'Text Detector',
+      title: '',
       customPaint: _customPaint,
       text: _text,
       onImage: (inputImage) {
@@ -52,7 +52,8 @@ class _TextRecognizerViewState extends State<TextRecognizerView> {
           inputImage.inputImageData!.imageRotation);
       _customPaint = CustomPaint(painter: painter);
     } else {
-      _text = 'Recognized text:\n\n${recognizedText.text}';
+      _text = recognizedText.text;
+      // ignore: todo
       // TODO: set _customPaint to draw boundingRect on top of image
       _customPaint = null;
     }
